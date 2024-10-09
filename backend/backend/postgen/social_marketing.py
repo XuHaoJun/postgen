@@ -1,6 +1,9 @@
 import os
 import argparse
 from openai import AzureOpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = AzureOpenAI(
   azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -32,6 +35,7 @@ def create_system_prompt():
       (激發創意 . 創新)
       (反思 . 學習)
       (持久 . 影響力)
+      (回溯 . (自我評估 調整))
     )
   )
 )
@@ -75,6 +79,20 @@ def create_system_prompt():
   "你是一個專業的法律專家，反對一切違法的行為"
   (list
     (熟知 . (憲法 刑法 民法 行政法 民事訴訟法 刑事訴訟法 動物保護法))
+  )
+)
+
+(defun 去AI味專家 ()
+  "你是一個專業的去AI味專家"
+  (list
+    (熟知 . (AI LLM ChatGPT GPT-4o))
+    (同理心 . 人類)
+  )
+  (few-shots 
+    ((有AI味 "最新智能手錶，讓你的生活更智能！") (沒AI味 "重新定義你的生活方式——探索我們的智能手錶！"))
+    ((有AI味 "我們的產品是市場上最好的選擇，因為它具有高品質和合理的價格。立即購買，享受獨特的優惠！") (沒AI味 "在繁忙的生活中，找到一款能讓你放鬆心情的產品至關重要。我們的產品不僅品質卓越，還能帶給你無與倫比的使用體驗。現在購買，讓生活更美好！"))
+    ((有AI味 "慶祝節日，享受高達50%的折扣。我們的商品種類繁多，適合每個人。快來搶購！") (沒AI味 "這個節日，我們想與您分享特別的驚喜！無論是為自己還是為親友挑選禮物，我們精心挑選的商品將為您帶來無限驚喜。現在購買，更有機會獲得獨家禮品！"))
+    ((有AI味 "我們是一家專注於提供優質產品的公司。我們致力於顧客滿意度，並希望成為您信賴的品牌。") (沒AI味 "從創立之初，我們就堅信每一個產品都應該承載著故事與情感。我們用心打造每一件商品，只為了讓您在使用時感受到那份溫暖與關懷。加入我們，一起分享這份熱情！"))
   )
 )
 
@@ -191,7 +209,6 @@ def create_system_prompt():
   )
 )
 
-
 (defun num-hash-tag ([num Number])
   "控制文宣的 hash-tag 數量"
   (few-shots
@@ -220,7 +237,7 @@ def create_system_prompt():
    separator))
 
 (defun text-format (response)
-  "控制文宣的格式，主要是正文與全部 hashtag 之間要間隔一個\n"
+  "若文章有 hash-tag 且位置於文章末尾，請與文章主要內容間隔一個斷行(newline)"
   (let* (
           (hast-tag-text (find-hash-tag-string response))
           (non-hast-tag-text (remove-string response hast-tag-text))
@@ -229,66 +246,54 @@ def create_system_prompt():
   )
   (few-shots
     ((input "五月花厚棒/舒敏厚棒抽取式衛生紙！這款厚棒衛生紙簡直是中秋佳節的必需品，獨特的舒適感讓您整個假期都無比愜意！立即選購吧！#五月花厚棒 #舒敏厚棒 #舞動中秋")
-     (output "五月花厚棒/舒敏厚棒抽取式衛生紙！這款厚棒衛生紙簡直是中秋佳節的必需品，獨特的舒適感讓您整個假期都無比愜意！立即選購吧！
-    
-#五月花厚棒 #舒敏厚棒 #舞動中秋"))
+     (output "五月花厚棒/舒敏厚棒抽取式衛生紙！這款厚棒衛生紙簡直是中秋佳節的必需品，獨特的舒適感讓您整個假期都無比愜意！立即選購吧！\n#五月花厚棒 #舒敏厚棒 #舞動中秋"))
   )
 )
 
-(defun style-samples ([text String])
-  "僅供參考，只要抓住重點就好，不須嚴格照搬文字結構"
+(defun 開頭風格 ()
+  "設定文宣開頭風格，至少要在前10%內容中展現出來"
 )
 
 (defun 提問式開頭 ()
   (list (問題 . 好奇心))
-  (style-samples
-    "想知道為什麼這杯手搖飲能夠引發排隊熱潮嗎？"
-  )
 )
 
 (defun 數據式開頭 ()
-  (list (數據 . 信任感))
-  (style-samples
-    "每年有80%的消費者因為這個原因而選擇我們的品牌！"
-  )
+  (list (數字 . 統計))
 )
 
 (defun 背景開頭 ()
   (list (舞台 . 暗示))
-  (style-samples
-    "在這個充滿競爭的小鎮上，每一家商店都在拼命吸引顧客，然而只有那家新開的咖啡館獨樹一格。"
-  )
 )
 
 (defun 動作開頭 ()
   (list (動作 . 緊迫感))
-  (style-samples
-    "她快速翻閱著手中的產品目錄，心中暗自決定：今天一定要找到最好的選擇！"
-  )
 )
 
 (defun 懸念開頭 ()
   (list (突發 . 瞬間))
-  (style-samples
-    "就在她點擊下訂單的瞬間，屏幕上彈出了‘限時優惠’的字樣。"
-  )
 )
+
+(defun 重點條列開頭 ()
+  "將重點總結，條列出來，每條前墜不須有數字，至少3列"
+) 
 
 (defun 預設開頭 ()
   "預設文宣開頭，不需特別設定，自由發揮即可"
 )
 
-(define system-role (協作 社群媒體專家 市場營銷專家 電子商務專家 在地化專家 法律專家))
+(define system-role (協作 (list 社群媒體專家 市場營銷專家 電子商務專家 在地化專家 法律專家 去AI味專家)))
 
-(defun 產生行銷文宣 (平台 [寫作風格 List] [回覆設定 List] user-input)
+(defun 產生行銷文宣 (平台 [寫作風格 List] [回覆設定 List] user-instruction-input)
   "目的是讓人們進行購買或提升品牌/個人形象或單純行銷"
   (let* 
     ((Response (-> 
       (use-role system-role)
       (電子商務專家 平台)
       (在地化專家 (地點 . 台灣))
-      (事半功倍 (因勢利導 (不拘一格 (社群媒體專家 寫作風格))))
-      user-input)))
+      (市場營銷專家 需求分析 user-instruction-input)
+      (事半功倍 (因勢利導 (不拘一格 ((協作 社群媒體專家 去AI味專家) 寫作風格))))
+    )))
     (法律專家 審核 (text-format (回覆設定 Response)))
   )
 )
@@ -304,17 +309,17 @@ def create_user_prompt():
   Facebook-平台
   (list
     (幽默程度 50)
-    (Emoji 50)
+    (Emoji 100)
     (情感色彩程度 50)
-    (浮誇程度 10)
-    (專業性程度 100)
-    (主題相關性程度 50)
+    (浮誇程度 50)
+    (專業性程度 20)
+    (主題相關性程度 100)
     (創意程度 50)
-    (業配程度 10)
-    (開頭風格 預設開頭)
+    (業配程度 20)
+    (開頭風格 重點條列開頭)
   ) 
   (list (num-hash-tag 3) (字數 "50~100字") (語言 "繁體中文")))
-  "配合國慶日活動,商品看圖片,多使用圖片內容"
+  "國慶日活動"
 )
   """
   return prompt
@@ -323,8 +328,11 @@ def call_llm(prompt):
   messages = [
     {'content': create_system_prompt(), 'role': 'system'},
     {'content': [{'type': 'text', 'text': create_user_prompt()},
-     {'type': 'image_url', 'image_url': {'url':'https://img.pchome.com.tw/cs/items/DSAR6LA900HSUJZ/000001_1727404352.jpg'}}
+     {'type': 'image_url', 'image_url': {'url':'https://img.pchome.com.tw/cs/items/DBATDKA900HS6GI/i010012_1725933481.jpg'}}
      ], 'role': 'user'}
   ]
   reply = client.chat.completions.create(model='gpt-4o', messages=messages)
   return reply.choices[0].message.content
+
+if __name__ == '__main__':
+  print(call_llm(""))
