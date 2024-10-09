@@ -6,8 +6,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: zh-Hant\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
 
-#: src/components/SiteLanguageSelect.tsx:24
+#: src/components/SiteLanguageSelect.tsx:21
 msgid "English"
 msgstr "English"
 
@@ -16,15 +22,27 @@ msgstr "English"
 msgid "PostGen"
 msgstr "PostGen"
 
-#: src/components/SiteLanguageSelect.tsx:26
-msgid "简体中文"
-msgstr "简体中文"
-
-#: src/components/SiteLanguageSelect.tsx:25
-msgid "繁體中文"
-msgstr "繁體中文"
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:135
+msgid "寫作風格"
+msgstr "寫作風格"
 
 #: src/components/MainNav.tsx:32
 #: src/components/MobileNav.tsx:55
-msgid "行銷"
-msgstr "行銷"
+msgid "社群行銷"
+msgstr "社群行銷"
+
+#: src/components/SiteLanguageSelect.tsx:20
+msgid "简体中文"
+msgstr "简体中文"
+
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:276
+msgid "結果"
+msgstr "結果"
+
+#: src/components/SiteLanguageSelect.tsx:19
+msgid "繁體中文"
+msgstr "繁體中文"
+
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:285
+msgid "送出"
+msgstr "送出"
