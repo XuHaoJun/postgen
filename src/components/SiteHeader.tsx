@@ -6,9 +6,9 @@ import { FaGithub } from "react-icons/fa6"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
-import { SiteLanguageSelect } from "./SiteLanguageSelect"
 import { MainNav } from "./MainNav"
 import { MobileNav } from "./MobileNav"
+import { SiteLanguageSelect } from "./SiteLanguageSelect"
 import { SiteThemeModeSelect } from "./SiteThemeModeSelect"
 import { buttonVariants } from "./ui/button"
 
@@ -20,6 +20,7 @@ export function SiteHeader() {
         <MobileNav />
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
+            <div className="flex justify-center md:hidden">PostGen</div>
           </div>
           <nav className="flex items-center gap-x-2">
             <NextLink

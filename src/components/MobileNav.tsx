@@ -43,16 +43,16 @@ export function MobileNav() {
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           <div className="flex flex-col space-y-3">
             <MobileLink
-              href="/marketing"
+              href="/social-marketing"
               className={cn(
                 "transition-colors hover:text-foreground/80",
-                pathname === "/marketing"
+                pathname === "/social-marketing"
                   ? "text-foreground"
                   : "text-foreground/60"
               )}
               onOpenChange={setOpen}
             >
-              <Trans>行銷</Trans>
+              <Trans>社群行銷</Trans>
             </MobileLink>
           </div>
           <div className="flex flex-col space-y-2"></div>

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import * as SliderPrimitive from "@radix-ui/react-slider"
+import * as R from "remeda"
 
 import { cn } from "@/lib/utils"
 
@@ -17,10 +18,10 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
+    <SliderPrimitive.Track className="relative h-3 w-full grow overflow-hidden rounded-full bg-secondary cursor-pointer">
       <SliderPrimitive.Range className="absolute h-full bg-primary" />
     </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-grab active:cursor-grabbing" />
+    <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-grab active:cursor-grabbing" />
   </SliderPrimitive.Root>
 ))
 Slider.displayName = SliderPrimitive.Root.displayName
@@ -44,9 +45,8 @@ const OneThumbSlider = React.forwardRef<
   )
   const finalOnValueChange = React.useCallback(
     (value?: number[]) => {
-      console.log(value)
       let nextValue: number | undefined
-      if (!value) {
+      if (R.isNullish(value)) {
         nextValue = value
       } else {
         if (value.length >= 1) {
@@ -55,7 +55,6 @@ const OneThumbSlider = React.forwardRef<
           nextValue = undefined
         }
       }
-      console.log(nextValue)
       onChange?.(nextValue)
     },
     [onChange]

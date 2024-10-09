@@ -209,7 +209,7 @@ def create_system_prompt():
   )
 )
 
-(defun num-hash-tag ([num Number])
+(defun num-hash-tag (num)
   "控制文宣的 hash-tag 數量"
   (few-shots
     ((input 3) (output "#果凍天堂 #盛香珍 #不可錯過"))
@@ -275,7 +275,7 @@ def create_system_prompt():
 )
 
 (defun 重點條列開頭 ()
-  "將重點總結，條列出來，每條前墜不須有數字，至少3列"
+  "將重點總結，條列出來，每條最前面不須有數字或符號，至少3列"
 ) 
 
 (defun 預設開頭 ()
@@ -284,7 +284,7 @@ def create_system_prompt():
 
 (define system-role (協作 (list 社群媒體專家 市場營銷專家 電子商務專家 在地化專家 法律專家 去AI味專家)))
 
-(defun 產生行銷文宣 (平台 [寫作風格 List] [回覆設定 List] user-instruction-input)
+(defun 產生行銷文宣 (平台 [寫作風格 List] [回覆設定 List] [user-instruction-input String])
   "目的是讓人們進行購買或提升品牌/個人形象或單純行銷"
   (let* 
     ((Response (-> 
@@ -315,7 +315,7 @@ def create_user_prompt():
     (專業性程度 20)
     (主題相關性程度 100)
     (創意程度 50)
-    (業配程度 20)
+    (業配程度 10)
     (開頭風格 重點條列開頭)
   ) 
   (list (num-hash-tag 3) (字數 "50~100字") (語言 "繁體中文")))

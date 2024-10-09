@@ -23,13 +23,13 @@ export function MainNav() {
       </Link>
       <nav className="flex items-center gap-4 text-sm lg:gap-6">
         <Link
-          href="/marketing"
+          href="/social-marketing"
           className={cn(
             "transition-colors hover:text-foreground/80",
-            pathname === "/marketing" ? "text-foreground" : "text-foreground/50"
+            pathname === "/social-marketing" ? "text-foreground" : "text-foreground/50"
           )}
         >
-          <Trans>行銷</Trans>
+          <Trans>社群行銷</Trans>
         </Link>
       </nav>
     </div>
