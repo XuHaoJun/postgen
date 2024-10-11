@@ -1,15 +1,14 @@
 import os
 import argparse
-from openai import AzureOpenAI
-from dotenv import load_dotenv
+from openai import AsyncAzureOpenAI
+from ..mydomain import SocialMarketingPostRequest
 
-load_dotenv()
-
-client = AzureOpenAI(
-  azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
-  api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-  api_version="2024-02-01"
-)
+def create_client():
+  return AsyncAzureOpenAI(
+    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    api_version="2024-02-01"
+  )
 
 """ 
 參考:
@@ -230,26 +229,6 @@ def create_system_prompt():
   )
 )
 
-(defun remove-nil-and-join (lst separator)
-  (string-join 
-   (filter (lambda (x) (and (string? x) (not (string-empty? x))))
-           lst) 
-   separator))
-
-(defun text-format (response)
-  "若文章有 hash-tag 且位置於文章末尾，請與文章主要內容間隔一個斷行(newline)"
-  (let* (
-          (hast-tag-text (find-hash-tag-string response))
-          (non-hast-tag-text (remove-string response hast-tag-text))
-        )
-    (remove-nil-and-join (list non-hast-tag-text hast-tag-text) "\n")
-  )
-  (few-shots
-    ((input "五月花厚棒/舒敏厚棒抽取式衛生紙！這款厚棒衛生紙簡直是中秋佳節的必需品，獨特的舒適感讓您整個假期都無比愜意！立即選購吧！#五月花厚棒 #舒敏厚棒 #舞動中秋")
-     (output "五月花厚棒/舒敏厚棒抽取式衛生紙！這款厚棒衛生紙簡直是中秋佳節的必需品，獨特的舒適感讓您整個假期都無比愜意！立即選購吧！\n#五月花厚棒 #舒敏厚棒 #舞動中秋"))
-  )
-)
-
 (defun 開頭風格 ()
   "設定文宣開頭風格，至少要在前10%內容中展現出來"
 )
@@ -289,12 +268,13 @@ def create_system_prompt():
   (let* 
     ((Response (-> 
       (use-role system-role)
+      回覆設定
       (電子商務專家 平台)
       (在地化專家 (地點 . 台灣))
       (市場營銷專家 需求分析 user-instruction-input)
       (事半功倍 (因勢利導 (不拘一格 ((協作 社群媒體專家 去AI味專家) 寫作風格))))
     )))
-    (法律專家 審核 (text-format (回覆設定 Response)))
+    (法律專家 審核 Response)
   )
 )
 
@@ -303,35 +283,39 @@ def create_system_prompt():
   '''
   return prompt
 
-def create_user_prompt():
-  prompt = """
+def create_user_prompt(body: SocialMarketingPostRequest):
+  prompt = f"""
 (產生行銷文宣 
   Facebook-平台
   (list
-    (幽默程度 50)
-    (Emoji 100)
-    (情感色彩程度 50)
-    (浮誇程度 50)
-    (專業性程度 20)
-    (主題相關性程度 100)
-    (創意程度 50)
-    (業配程度 10)
-    (開頭風格 重點條列開頭)
+    (幽默程度 {body.humorLevel})
+    (Emoji程度 {body.emojiLevel})
+    (情感色彩程度 {body.emotionLevel})
+    (浮誇程度 {body.showyLevel})
+    (專業性程度 {body.professionalLevel})
+    (主題相關性程度 {body.professionalLevel})
+    (創意程度 {body.creativeLevel})
+    (業配程度 {body.sectorLevel})
+    (開頭風格 {body.startStyle})
   ) 
-  (list (num-hash-tag 3) (字數 "50~100字") (語言 "繁體中文")))
-  "國慶日活動"
+  (list (num-hash-tag "{body.numHashtag}") (字數 {body.numCharacter}) (語言 "繁體中文")))
+  "{body.userInstruction}"
 )
   """
   return prompt
 
-def call_llm(prompt):
+async def call_llm(body: SocialMarketingPostRequest):
   messages = [
-    {'content': create_system_prompt(), 'role': 'system'},
-    {'content': [{'type': 'text', 'text': create_user_prompt()},
-     {'type': 'image_url', 'image_url': {'url':'https://img.pchome.com.tw/cs/items/DBATDKA900HS6GI/i010012_1725933481.jpg'}}
-     ], 'role': 'user'}
+    {'role': 'system', 'content': create_system_prompt()},
+    {'role': 'user', 'content': 
+      [
+        {'type': 'text', 'text': create_user_prompt(body)},
+        *([{'type': 'image_url', 'image_url': {'url': body.imageUrl}}] if body.imageUrl else [])
+      ]
+    }
   ]
-  reply = client.chat.completions.create(model='gpt-4o', messages=messages)
+  async with create_client() as client:
+    reply = await client.chat.completions.create(model='gpt-4o', messages=messages)
   return reply.choices[0].message.content
 
 if __name__ == '__main__':

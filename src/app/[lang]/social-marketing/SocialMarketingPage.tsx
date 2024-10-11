@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useCreatePostMutation } from "@/api/query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Trans } from "@lingui/macro"
 import { useForm } from "react-hook-form"
@@ -39,7 +40,7 @@ const FormSchema = z.object({
   showyLevel: defaultNumberZod(),
   emotionLevel: defaultNumberZod(),
   professionalLevel: defaultNumberZod(),
-  topciRelatedLevel: defaultNumberZod(),
+  topicRelatedLevel: defaultNumberZod(),
   creativeLevel: defaultNumberZod(),
   sectorLevel: defaultNumberZod(),
 })
@@ -58,14 +59,16 @@ export default function MarketingPage() {
       showyLevel: 10,
       emotionLevel: 50,
       professionalLevel: 50,
-      topciRelatedLevel: 50,
+      topicRelatedLevel: 50,
       creativeLevel: 50,
       sectorLevel: 10,
     },
   })
 
+  const createPostMutation = useCreatePostMutation()
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data)
+    createPostMutation.mutate(data)
   }
 
   const levels: Array<{
@@ -76,7 +79,7 @@ export default function MarketingPage() {
       | "showyLevel"
       | "emotionLevel"
       | "professionalLevel"
-      | "topciRelatedLevel"
+      | "topicRelatedLevel"
       | "creativeLevel"
       | "sectorLevel"
     >
@@ -93,7 +96,7 @@ export default function MarketingPage() {
         description: ["負面", "中立", "正面"],
       },
       { name: "professionalLevel", label: "專業性程度" },
-      { name: "topciRelatedLevel", label: "主題相關性程度" },
+      { name: "topicRelatedLevel", label: "主題相關性程度" },
       { name: "showyLevel", label: "浮誇程度" },
       { name: "sectorLevel", label: "業配程度" },
     ],
@@ -127,163 +130,173 @@ export default function MarketingPage() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
+          className="flex flex-col md:flex-row gap-4"
         >
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <Trans>寫作風格</Trans>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <FormField
-                control={form.control}
-                name="startStyle"
-                render={({ field }) => (
-                  <RadioGroup
-                    className="flex gap-3"
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    {startStyles.map((x) => (
-                      <div
-                        key={x.value}
-                        className="flex items-center space-x-1"
-                      >
-                        <RadioGroupItem value={x.value} id={x.value} />
-                        <Label htmlFor={x.value} className="cursor-pointer">
-                          {x.value}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                )}
-              />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-2">
-                {levels.map((level) => (
-                  <FormField
-                    key={level.name}
-                    control={form.control}
-                    name={level.name}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {level.label}: {field.value}
-                        </FormLabel>
-                        <FormControl>
-                          <OneThumbSlider
-                            min={0}
-                            max={100}
-                            step={10}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          <span className="flex justify-between">
-                            {(level.description || ["無", "中", "高"])?.map(
-                              (d, i) => <span key={i}>{d}</span>
-                            )}
-                          </span>
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>設定</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-12 gap-4">
-              <FormField
-                control={form.control}
-                name="numCharacter"
-                render={({ field }) => (
-                  <FormItem className="col-span-12 md:col-span-6">
-                    <FormLabel>字數</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="numHashtag"
-                render={({ field }) => (
-                  <FormItem className="col-span-12 md:col-span-6">
-                    <FormLabel>Hashtag 數量</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="imageUrl"
-                render={({ field }) => (
-                  <FormItem className="col-span-12">
-                    <FormLabel>相關圖片網址</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      可填入既有產品介紹圖片或活動DM
-                      {field.value && (
-                        <img src={field.value} className="w-[250px]" />
+          <div className="w-full md:w-1/2 order-1 md:order-2 flex flex-col gap-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <Trans>寫作風格</Trans>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <FormField
+                  control={form.control}
+                  name="startStyle"
+                  render={({ field }) => (
+                    <RadioGroup
+                      className="grid grid-cols-12 gap-6 md:gap-3"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      {startStyles.map((x) => (
+                        <div
+                          key={x.value}
+                          className="flex items-center space-x-1 col-span-6 md:col-span-3"
+                        >
+                          <RadioGroupItem value={x.value} id={x.value} />
+                          <Label htmlFor={x.value} className="cursor-pointer">
+                            {x.value}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-2">
+                  {levels.map((level) => (
+                    <FormField
+                      key={level.name}
+                      control={form.control}
+                      name={level.name}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {level.label}: {field.value}
+                          </FormLabel>
+                          <FormControl>
+                            <OneThumbSlider
+                              min={0}
+                              max={100}
+                              step={10}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            <span className="flex justify-between">
+                              {(level.description || ["無", "中", "高"])?.map(
+                                (d, i) => <span key={i}>{d}</span>
+                              )}
+                            </span>
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="userInstruction"
-                render={({ field }) => (
-                  <FormItem className="col-span-12">
-                    <FormLabel>
-                      使用者指示<span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea2
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                        {...field}
-                        minRows={4}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      可輸入產品介紹(若已填入產品介紹圖片，可省略)，和你的需求，如&quot;配合國慶日&quot;、
-                      &quot;夏日活動&quot;等
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <Trans>結果</Trans>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px]">
-              <FacebookPost text={text} />
-            </CardContent>
-          </Card>
-          <div className="flex justify-end gap-2 mt-4 sticky bottom-0 bg-white rounded-md border p-4">
-            <Button type="submit">
-              <Trans>送出</Trans>
-            </Button>
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>設定</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-12 gap-4">
+                <FormField
+                  control={form.control}
+                  name="numCharacter"
+                  render={({ field }) => (
+                    <FormItem className="col-span-12 md:col-span-6">
+                      <FormLabel>字數</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormDescription></FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="numHashtag"
+                  render={({ field }) => (
+                    <FormItem className="col-span-12 md:col-span-6">
+                      <FormLabel>Hashtag 數量</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormDescription></FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <FormItem className="col-span-12">
+                      <FormLabel>相關圖片網址</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        可填入既有產品介紹圖片或活動DM
+                        {field.value && (
+                          <img src={field.value} className="w-[150px]" />
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="userInstruction"
+                  render={({ field }) => (
+                    <FormItem className="col-span-12">
+                      <FormLabel>
+                        使用者指示<span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea2
+                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                          {...field}
+                          minRows={4}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        可輸入產品介紹(若已填入產品介紹圖片，可省略)，和你的需求，如&quot;配合國慶日&quot;、
+                        &quot;秋季&quot;、&quot;重寫既有文宣&quot;等
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="flex flex-1-1 w-full col-span-12 md:sticky md:bottom-0"
+                  disabled={createPostMutation.isPending}
+                >
+                  {createPostMutation.isPending ? (
+                    <Trans>送出...</Trans>
+                  ) : (
+                    <Trans>送出</Trans>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="w-full md:w-1/2 order-2 md:order-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <Trans>結果</Trans>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px]">
+                <FacebookPost text={createPostMutation.data || ""} />
+              </CardContent>
+            </Card>
           </div>
         </form>
       </Form>

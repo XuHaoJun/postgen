@@ -13,6 +13,7 @@ fastapi = {extras = ["standard"], version = "^0.115.0"}
 slowapi = "^0.1.9"
 argparse = "^1.4.0"
 python-dotenv = "^1.0.1"
+pydantic = "^2.9.2"
 
 
 [build-system]

@@ -1,6 +1,11 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 
 import * as Apis from "./index"
 
-export const QueryKeys = {
+export const QueryKeys = {}
+
+export function useCreatePostMutation() {
+  return useMutation({
+    mutationFn: Apis.createPost,
+  })
 }

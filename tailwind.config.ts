@@ -53,62 +53,6 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        pkmtype: {
-          normal: {
-            1: "#9fa19f",
-          },
-          fire: {
-            1: "#e62829",
-          },
-          water: {
-            1: "#2980ef",
-          },
-          electric: {
-            1: "#fac000",
-          },
-          grass: {
-            1: "#3fa129",
-          },
-          ice: {
-            1: "#3fd8ff",
-          },
-          fighting: {
-            1: "#ff8000",
-          },
-          poison: {
-            1: "#9141cb",
-          },
-          ground: {
-            1: "#915121",
-          },
-          flying: {
-            1: "#81b9ef",
-          },
-          psychic: {
-            1: "#ef4179",
-          },
-          bug: {
-            1: "#91a119",
-          },
-          rock: {
-            1: "#afa981",
-          },
-          ghost: {
-            1: "#704170",
-          },
-          dragon: {
-            1: "#5060e1",
-          },
-          dark: {
-            1: "#50413f",
-          },
-          steel: {
-            1: "#60a1b8",
-          },
-          fairy: {
-            1: "#ef70ef",
-          },
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
