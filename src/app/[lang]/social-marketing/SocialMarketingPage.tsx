@@ -26,7 +26,7 @@ import { FacebookPost } from "@/components/FacebookPost"
 import { Textarea2 } from "@/components/Textarea2"
 
 function defaultNumberZod() {
-  return z.number().positive().min(0).max(100)
+  return z.number().positive().gte(0).lte(100)
 }
 
 const FormSchema = z.object({
