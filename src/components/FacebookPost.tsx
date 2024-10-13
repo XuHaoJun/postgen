@@ -3,6 +3,8 @@ import { MessageCircle, Share2, ThumbsUp } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+import { Skeleton } from "./ui/skeleton"
+
 function splitHashtags(input: string) {
   // Split the string into parts with hashtags and text
   const parts = input.split(/(?=#)/)
@@ -17,9 +19,14 @@ function splitHashtags(input: string) {
   })
 }
 
+export interface FacebookPostProps {
+  text: string
+  isLoading?: boolean
+}
+
 // TODO
 // 右上角新增漢堡按鈕
-export const FacebookPost = ({ text }: { text: string }) => {
+export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
   const tokens = React.useMemo(() => splitHashtags(text), [text])
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
@@ -49,6 +56,13 @@ export const FacebookPost = ({ text }: { text: string }) => {
               return <span key={i}>{token.value}</span>
             }
           })}
+          {isLoading && (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="w-full h-4" />
+              <Skeleton className="w-full h-4" />
+              <Skeleton className="w-full h-4" />
+            </div>
+          )}
         </p>
         {/* <img
           src="/api/placeholder/500/300"

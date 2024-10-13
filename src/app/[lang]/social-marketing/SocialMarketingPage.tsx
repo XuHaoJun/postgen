@@ -254,9 +254,7 @@ export default function MarketingPage() {
                   name="userInstruction"
                   render={({ field }) => (
                     <FormItem className="col-span-12">
-                      <FormLabel>
-                        使用者指示<span className="text-red-500">*</span>
-                      </FormLabel>
+                      <FormLabel required>使用者指示</FormLabel>
                       <FormControl>
                         <Textarea2
                           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
@@ -294,7 +292,10 @@ export default function MarketingPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px]">
-                <FacebookPost text={createPostMutation.data || ""} />
+                <FacebookPost
+                  text={createPostMutation.data || ""}
+                  isLoading={createPostMutation.isPending}
+                />
               </CardContent>
             </Card>
           </div>
