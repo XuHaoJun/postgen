@@ -22,7 +22,7 @@ msgstr ""
 msgid "PostGen"
 msgstr ""
 
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:135
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:139
 msgid "寫作風格"
 msgstr ""
 
@@ -35,7 +35,7 @@ msgstr ""
 msgid "简体中文"
 msgstr ""
 
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:276
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:291
 msgid "結果"
 msgstr ""
 
@@ -43,6 +43,10 @@ msgstr ""
 msgid "繁體中文"
 msgstr ""
 
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:285
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:281
 msgid "送出"
+msgstr ""
+
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:279
+msgid "送出..."
 msgstr ""
