@@ -216,19 +216,6 @@ def create_system_prompt():
   )
 )
 
-(defun find-hash-tag-string (text)
-"find string sequence that start with # and space between each hashtag end last hashtag"
-  (few-shots 
-    ((input "快來品嚐這令人讚不絕口的美味果凍！🍇🍇🍇 #果凍天堂 #盛香珍 #不可錯過")
-     (output "#果凍天堂 #盛香珍 #不可錯過"))
-    ((input "#果凍天堂 #盛香珍 #不可錯過 快來品嚐這令人讚不絕口的美味果凍！🍇🍇🍇")
-     (output "#果凍天堂 #盛香珍 #不可錯過"))
-    ((input "讓您一口接一口，根本停不下來！ #盛香珍 #小魚干花生 #中秋美味")
-     (output "#盛香珍 #小魚干花生 #中秋美味"))
-    )
-  )
-)
-
 (defun 開頭風格 ()
   "設定文宣開頭風格，至少要在前10%內容中展現出來"
 )
@@ -298,7 +285,7 @@ def create_user_prompt(body: SocialMarketingPostRequest):
     (業配程度 {body.sectorLevel})
     (開頭風格 {body.startStyle})
   ) 
-  (list (num-hash-tag "{body.numHashtag}") (字數 {body.numCharacter}) (語言 "繁體中文")))
+  (list (num-hash-tag "{body.numHashtag}") (字數 {body.numCharacter}) (語言 "繁體中文") (格式 "純文字，不使用 Markdown")))
   "{body.userInstruction}"
 )
   """
