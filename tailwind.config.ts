@@ -72,11 +72,16 @@ const config = {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.2)" },
         },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "zoom-in-out": "zoom-in-out 2s infinite",
+        wiggle: "wiggle 200ms ease-in-out",
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],

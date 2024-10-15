@@ -75,15 +75,24 @@ export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
       </div>
       <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
         <div className="flex justify-between items-center text-gray-600">
-          <button className="flex items-center space-x-2 hover:text-blue-600">
+          <button
+            type="button"
+            className="flex items-center space-x-2 hover:text-blue-600 active:animate-wiggle"
+          >
             <ThumbsUp size={20} />
             <span>Like</span>
           </button>
-          <button className="flex items-center space-x-2 hover:text-blue-600">
+          <button
+            type="button"
+            className="flex items-center space-x-2 hover:text-blue-600"
+          >
             <MessageCircle size={20} />
             <span>Comment</span>
           </button>
-          <button className="flex items-center space-x-2 hover:text-blue-600">
+          <button
+            type="button"
+            className="flex items-center space-x-2 hover:text-blue-600"
+          >
             <Share2 size={20} />
             <span>Share</span>
           </button>
