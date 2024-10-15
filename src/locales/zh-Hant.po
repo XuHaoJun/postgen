@@ -22,9 +22,17 @@ msgstr "English"
 msgid "PostGen"
 msgstr "PostGen"
 
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:139
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:140
 msgid "寫作風格"
 msgstr "寫作風格"
+
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:282
+msgid "產生AI貼文"
+msgstr "產生AI貼文"
+
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:280
+msgid "產生AI貼文..."
+msgstr "產生AI貼文..."
 
 #: src/components/MainNav.tsx:32
 #: src/components/MobileNav.tsx:55
@@ -35,18 +43,10 @@ msgstr "社群行銷"
 msgid "简体中文"
 msgstr "简体中文"
 
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:291
+#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:292
 msgid "結果"
 msgstr "結果"
 
 #: src/components/SiteLanguageSelect.tsx:19
 msgid "繁體中文"
 msgstr "繁體中文"
-
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:281
-msgid "送出"
-msgstr "送出"
-
-#: src/app/[lang]/social-marketing/SocialMarketingPage.tsx:279
-msgid "送出..."
-msgstr "送出..."

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useCreatePostMutation } from "@/api/query"
+import { formatResponseError } from "@/utils/formatResponseError"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Trans } from "@lingui/macro"
 import { useForm } from "react-hook-form"
@@ -276,9 +277,9 @@ export default function MarketingPage() {
                   disabled={createPostMutation.isPending}
                 >
                   {createPostMutation.isPending ? (
-                    <Trans>送出...</Trans>
+                    <Trans>產生AI貼文...</Trans>
                   ) : (
-                    <Trans>送出</Trans>
+                    <Trans>產生AI貼文</Trans>
                   )}
                 </Button>
               </CardContent>
@@ -292,10 +293,16 @@ export default function MarketingPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px]">
-                <FacebookPost
-                  text={createPostMutation.data || ""}
-                  isLoading={createPostMutation.isPending}
-                />
+                {createPostMutation.error ? (
+                  <p className="text-red-500">
+                    {formatResponseError(createPostMutation.error)}
+                  </p>
+                ) : (
+                  <FacebookPost
+                    text={createPostMutation.data || ""}
+                    isLoading={createPostMutation.isPending}
+                  />
+                )}
               </CardContent>
             </Card>
           </div>
