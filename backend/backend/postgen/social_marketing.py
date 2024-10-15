@@ -211,7 +211,7 @@ def create_system_prompt():
 (defun num-hash-tag (num)
   "控制文宣的 hash-tag 數量"
   (few-shots
-    ((input 3) (output "#果凍天堂 #盛香珍 #不可錯過"))
+    ((input 3) (output "#tag_sample1 #tag_sample2 #tag_sample3"))
     ((input 0) (output ""))
   )
 )
@@ -285,10 +285,34 @@ def create_user_prompt(body: SocialMarketingPostRequest):
     (業配程度 {body.sectorLevel})
     (開頭風格 {body.startStyle})
   ) 
-  (list (num-hash-tag "{body.numHashtag}") (字數 {body.numCharacter}) (語言 "繁體中文") (格式 "純文字，不使用 Markdown")))
+  (list 
+    (num-hash-tag "{body.numHashtag}")
+    (字數 {body.numCharacter})
+    (語言 . "繁體中文")
+    (格式 . "純文字，不使用 Markdown")
+  )
   "{body.userInstruction}"
 )
   """
+  return prompt
+
+def create_spliter_prompt():
+  prompt = '''
+(defun 社群貼文斷句高手 ()
+  "你是一個專業的社群貼文斷句高手，在最少修改的情況下，盡可能保持原始內容下，進行斷句"
+  (list
+    (文字魔法 . 句句驚喜)
+    (原汁原味 . 口齒留香)
+  )
+)
+
+(setq system-role 社群貼文斷句高手)
+(defun 斷句 ([text String])
+  "斷句符號為:(newline \n)，一句最多字數約10~13字。若有連續 hashtag 則不須斷句。"
+)
+;;; Attention: 运行规则!
+;; 1. No other comments!!
+  '''
   return prompt
 
 async def call_llm(body: SocialMarketingPostRequest):
@@ -303,7 +327,12 @@ async def call_llm(body: SocialMarketingPostRequest):
   ]
   async with create_client() as client:
     reply = await client.chat.completions.create(model='gpt-4o', messages=messages)
-  return reply.choices[0].message.content
+    if body.autoNewline:
+      post = reply.choices[0].message.content
+      finalReply = await client.chat.completions.create(model='gpt-4o', messages=[{'role': 'system', 'content': create_spliter_prompt()}, {'role': 'user', 'content': f'(斷句 "{post}")'}])
+    else:
+      finalReply = reply
+  return finalReply.choices[0].message.content
 
 if __name__ == '__main__':
   print(call_llm(""))

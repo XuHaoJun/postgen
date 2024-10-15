@@ -7,6 +7,7 @@ class SocialMarketingPostRequest(BaseModel):
     numHashtag: int = Body(..., example=3)
     imageUrl: str = Body("", example="")
     userInstruction: str = Body(..., example="")
+    autoNewline: bool = Body(..., example=True)
     humorLevel: int = Body(..., example=50, ge=0, le=100)
     emojiLevel: int = Body(..., example=50, ge=0, le=100)
     showyLevel: int = Body(..., example=10, ge=0, le=100)

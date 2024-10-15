@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { OneThumbSlider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
 import { FacebookPost } from "@/components/FacebookPost"
 import { Textarea2 } from "@/components/Textarea2"
 
@@ -36,6 +37,7 @@ const FormSchema = z.object({
   numHashtag: z.string(),
   imageUrl: z.string(),
   userInstruction: z.string().min(1, { message: "請輸入使用者指示" }),
+  autoNewline: z.boolean(),
   humorLevel: defaultNumberZod(),
   emojiLevel: defaultNumberZod(),
   showyLevel: defaultNumberZod(),
@@ -55,6 +57,7 @@ export default function MarketingPage() {
       userInstruction: "",
       imageUrl: "",
       numHashtag: "3",
+      autoNewline: true,
       humorLevel: 50,
       emojiLevel: 50,
       showyLevel: 10,
@@ -228,6 +231,21 @@ export default function MarketingPage() {
                       </FormControl>
                       <FormDescription></FormDescription>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="autoNewline"
+                  render={({ field }) => (
+                    <FormItem className="col-span-12 md:col-span-6 flex gap-2 items-end">
+                      <FormLabel className="text-base">自動斷句</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
