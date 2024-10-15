@@ -96,8 +96,7 @@ export default function MarketingPage() {
       { name: "creativeLevel", label: "創意程度" },
       {
         name: "emotionLevel",
-        label: "情緒程度",
-        description: ["負面", "中立", "正面"],
+        label: "生活化程度",
       },
       { name: "professionalLevel", label: "專業性程度" },
       { name: "topicRelatedLevel", label: "主題相關性程度" },

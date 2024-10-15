@@ -208,6 +208,18 @@ def create_system_prompt():
   )
 )
 
+(defun 生活化程度 ([value Number]))
+  "value range from 0 to 100"
+  (list
+    (平易近人 . 樸實無華)
+  )
+  (few-shots
+    ((input 0) (output "在當前的經濟體系中，資源的非持續性利用導致了生態系統的退化。研究顯示，線性經濟模式的推進對環境造成了深遠影響。"))
+    ((input 50) (output "隨著零廢棄理念逐漸受到重視，許多人開始嘗試將其應用於日常生活中。例如，可以通過減少一次性產品的使用來降低廢棄物產生。這不僅有助於環保，也能節省開支。"))
+    ((input 100) (output "你是否曾經在倒垃圾時驚訝於自己產生了多少廢棄物？其實，我們可以從小處著手，像是帶上自己的環保袋去超市，選擇不包裝的食材，或者購買那些外觀不完美但味道一樣好的瑕疵蔬果。這些小改變不僅能減少垃圾，也能讓我們的生活更有意義！"))
+  )
+)
+
 (defun num-hash-tag (num)
   "控制文宣的 hash-tag 數量"
   (few-shots
@@ -277,7 +289,7 @@ def create_user_prompt(body: SocialMarketingPostRequest):
   (list
     (幽默程度 {body.humorLevel})
     (Emoji程度 {body.emojiLevel})
-    (情感色彩程度 {body.emotionLevel})
+    (生活化程度 {body.emotionLevel})
     (浮誇程度 {body.showyLevel})
     (專業性程度 {body.professionalLevel})
     (主題相關性程度 {body.professionalLevel})
@@ -302,13 +314,13 @@ def create_spliter_prompt():
   "你是一個專業的社群貼文斷句高手，在最少修改的情況下，盡可能保持原始內容下，進行斷句"
   (list
     (文字魔法 . 句句驚喜)
-    (原汁原味 . 口齒留香)
+    (原汁原味 . 初心不改)
   )
 )
 
 (setq system-role 社群貼文斷句高手)
 (defun 斷句 ([text String])
-  "斷句符號為:(newline \n)，一句最多字數約10~13字。若有連續 hashtag 則不須斷句。"
+  "斷句符號為:(newline \n)，一句字數約10~13字。若斷句後，不通暢，則不要斷句。若有連續 hashtag 則不須斷句。"
 )
 ;;; Attention: 运行规则!
 ;; 1. No other comments!!
