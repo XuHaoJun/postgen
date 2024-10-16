@@ -32,6 +32,7 @@ export interface FacebookPostProps {
 export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
   const tokens = React.useMemo(() => splitHashtags(text), [text])
   const createImageMutation = useCreateImageMutation()
+  const [userInstruction, setUserInstruction] = React.useState("")
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-4">
@@ -81,11 +82,13 @@ export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
               <Textarea2
                 placeholder="輸入使用者指示，如圖片風格、主題、場景等"
                 minRows={2}
+                value={userInstruction}
+                onChange={(e) => setUserInstruction(e.target.value)}
               />
               <Button
                 type="button"
                 onClick={() =>
-                  createImageMutation.mutate({ text, userInstruction: "" })
+                  createImageMutation.mutate({ text, userInstruction })
                 }
                 disabled={createImageMutation.isPending}
               >

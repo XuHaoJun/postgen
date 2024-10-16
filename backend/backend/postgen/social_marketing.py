@@ -12,8 +12,8 @@ def create_client():
 
 def create_client_img():
   return AsyncAzureOpenAI(
-    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT_IMG"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY_IMG"),
+    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT_IMG") or os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_key=os.getenv("AZURE_OPENAI_API_KEY_IMG") or os.getenv("AZURE_OPENAI_API_KEY"),
     api_version="2024-02-01"
   )
 
@@ -372,7 +372,8 @@ def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
 (defun 平面設計專家 ()
   "你是一個專業的平面設計專家"
   (list
-    (無文字 . 跨文化)
+    (熟知 . (構圖 色彩學 海報設計))
+    (無文字 . 極簡風)
   )
 )
 
@@ -404,7 +405,7 @@ def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
       (在地化專家 (地點 . 台灣))
       (社群媒體專家 user-instruction-input)
       ;;; 注意! 不要有任何文字
-      (微故事 (跨越時空 (吸引眼球 ((協作 社群媒體專家 平面設計專家  貼文內容)))))
+      (微故事 (跨越時空 (吸引眼球 ((協作 社群媒體專家 平面設計專家 貼文內容)))))
     )))
     Response
   )
