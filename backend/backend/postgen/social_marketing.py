@@ -403,8 +403,9 @@ def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
     ((Response (->
       (use-role system-role)
       (在地化專家 (地點 . 台灣))
+      ;; 放大該權重 user-instruction-input
       (社群媒體專家 user-instruction-input)
-      ;;; 注意! 不要有任何文字
+      ;; 注意! 圖片上不要有任何文字
       (微故事 (跨越時空 (吸引眼球 ((協作 社群媒體專家 平面設計專家 貼文內容)))))
     )))
     Response
