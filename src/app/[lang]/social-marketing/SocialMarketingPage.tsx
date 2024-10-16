@@ -214,7 +214,7 @@ export default function MarketingPage() {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormDescription></FormDescription>
+                      <FormDescription>可改為無限制</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -228,7 +228,7 @@ export default function MarketingPage() {
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormDescription></FormDescription>
+                      <FormDescription>可改為無限制</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -275,7 +275,6 @@ export default function MarketingPage() {
                       <FormLabel required>使用者指示</FormLabel>
                       <FormControl>
                         <Textarea2
-                          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
                           {...field}
                           minRows={4}
                         />
@@ -311,9 +310,11 @@ export default function MarketingPage() {
               </CardHeader>
               <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px]">
                 {createPostMutation.error ? (
-                  <p className="text-red-500">
-                    {formatResponseError(createPostMutation.error)}
-                  </p>
+                  <div className="p-4 bg-white rounded-lg shadow-md">
+                    <p className="text-red-500">
+                      {formatResponseError(createPostMutation.error)}
+                    </p>
+                  </div>
                 ) : (
                   <FacebookPost
                     text={createPostMutation.data || ""}

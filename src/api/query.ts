@@ -9,3 +9,9 @@ export function useCreatePostMutation() {
     mutationFn: Apis.createPost,
   })
 }
+
+export function useCreateImageMutation() {
+  return useMutation({
+    mutationFn: Apis.createImage,
+  })
+}

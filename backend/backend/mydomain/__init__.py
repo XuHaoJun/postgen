@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class SocialMarketingPostRequest(BaseModel):
     startStyle: str = Body(..., example="預設開頭")
     numCharacter: str = Body(..., example="30~80字")
-    numHashtag: int = Body(..., example=3)
+    numHashtag: str = Body(..., example="3")
     imageUrl: str = Body("", example="")
     userInstruction: str = Body(..., example="")
     autoNewline: bool = Body(..., example=True)
@@ -16,3 +16,7 @@ class SocialMarketingPostRequest(BaseModel):
     topicRelatedLevel: int = Body(..., example=50, ge=0, le=100)
     creativeLevel: int = Body(..., example=50, ge=0, le=100)
     sectorLevel: int = Body(..., example=10, ge=0, le=100)
+
+class SocialMarketingImagetRequest(BaseModel):
+    text: str = Body(..., example="文章")
+    userInstruction: str = Body(..., example="")

@@ -1,12 +1,19 @@
 import os
 import argparse
 from openai import AsyncAzureOpenAI
-from ..mydomain import SocialMarketingPostRequest
+from .. import mydomain
 
 def create_client():
   return AsyncAzureOpenAI(
     azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    api_version="2024-02-01"
+  )
+
+def create_client_img():
+  return AsyncAzureOpenAI(
+    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT_IMG"),
+    api_key=os.getenv("AZURE_OPENAI_API_KEY_IMG"),
     api_version="2024-02-01"
   )
 
@@ -265,7 +272,7 @@ def create_system_prompt():
 (defun 產生行銷文宣 (平台 [寫作風格 List] [回覆設定 List] [user-instruction-input String])
   "目的是讓人們進行購買或提升品牌/個人形象或單純行銷"
   (let* 
-    ((Response (-> 
+    ((Response (->
       (use-role system-role)
       回覆設定
       (電子商務專家 平台)
@@ -282,7 +289,7 @@ def create_system_prompt():
   '''
   return prompt
 
-def create_user_prompt(body: SocialMarketingPostRequest):
+def create_user_prompt(body: mydomain.SocialMarketingPostRequest):
   prompt = f"""
 (產生行銷文宣 
   Facebook-平台
@@ -320,14 +327,14 @@ def create_spliter_prompt():
 
 (setq system-role 社群貼文斷句高手)
 (defun 斷句 ([text String])
-  "斷句符號為:(newline \n)，一句字數約10~13字。若斷句後，不通暢，則不要斷句。若有連續 hashtag 則不須斷句。"
+  "斷句符號為:(newline \n)，一句字數約10~20字。若斷句後，不通暢，則不要斷句。若有連續 hashtag 則不須斷句。"
 )
 ;;; Attention: 运行规则!
 ;; 1. No other comments!!
   '''
   return prompt
 
-async def call_llm(body: SocialMarketingPostRequest):
+async def call_llm(body: mydomain.SocialMarketingPostRequest):
   messages = [
     {'role': 'system', 'content': create_system_prompt()},
     {'role': 'user', 'content': 
@@ -346,5 +353,77 @@ async def call_llm(body: SocialMarketingPostRequest):
       finalReply = reply
   return finalReply.choices[0].message.content
 
-if __name__ == '__main__':
-  print(call_llm(""))
+def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
+  prompt = f'''
+
+(defun 協作 ([roles List]) 
+  (team-style roles 
+    (list
+      (信任 . 溝通)
+      (合作 . 共享)
+      (激發創意 . 創新)
+      (反思 . 學習)
+      (持久 . 影響力)
+      (回溯 . (自我評估 調整))
+    )
+  )
+)
+
+(defun 平面設計專家 ()
+  "你是一個專業的平面設計專家"
+  (list
+    (無文字 . 跨文化)
+  )
+)
+
+(defun 社群媒體專家 ()
+  "你是一個專業的社群媒體行銷專家"
+  (list
+    (創意 . 跳脫傳統框架)
+    (文字敏感度 . 引人入勝的內容)
+    (建立關聯性 . (目標受眾 共鳴))
+    (性格 . (接地氣 熱情 用心))
+    (表達 . (言簡 精准))
+  )
+)
+
+(defun 在地化專家 ()
+  "你是一個專業的在地化專家"
+  (list
+    (文化適應 . (歷史 宗教 節日 傳統 "避免觸犯禁忌"))
+    (建築 . 歷史)
+  )
+)
+
+(define system-role (協作 (list 平面設計專家 社群媒體專家 在地化專家)))
+
+(defun 產生貼文圖片 ([貼文內容 String] [user-instruction-input String])
+  (let* 
+    ((Response (->
+      (use-role system-role)
+      (在地化專家 (地點 . 台灣))
+      (社群媒體專家 user-instruction-input)
+      ;;; 注意! 不要有任何文字
+      (微故事 (跨越時空 (吸引眼球 ((協作 社群媒體專家 平面設計專家  貼文內容)))))
+    )))
+    Response
+  )
+)
+
+(產生貼文圖片 "{body.text}" "{body.userInstruction}")
+  '''
+  return  prompt
+
+async def call_llm_img(body: mydomain.SocialMarketingImagetRequest):
+  async with create_client_img() as client:
+    response = await client.images.generate(
+        model="dall-e-3",
+        prompt=create_img_prompt(body),
+        n=1,
+        size="1024x1024",
+        style="vivid"
+    )
+
+    # Get the image URL from the response
+    print(response)
+  return response

@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from .mydomain import SocialMarketingPostRequest
+from . import mydomain
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
@@ -36,9 +36,14 @@ app.add_middleware(
 
 @app.post("/social-marketing/posts")
 @limiter.limit(os.getenv("POSTS_CREATE_LIMIT") or "1/1minute")
-async def create_post(request: Request, data: SocialMarketingPostRequest = Body(...)):
-    print(data)
+async def create_post(request: Request, data: mydomain.SocialMarketingPostRequest = Body(...)):
     text = await social_marketing.call_llm(data)
+    return text
+
+@app.post("/social-marketing/images")
+@limiter.limit(os.getenv("POSTS_CREATE_LIMIT") or "1/1minute")
+async def create_post(request: Request, data: mydomain.SocialMarketingImagetRequest = Body(...)):
+    text = await social_marketing.call_llm_img(data)
     return text
 
 @app.get("/health")

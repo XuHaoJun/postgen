@@ -1,8 +1,11 @@
 import * as React from "react"
+import { useCreateImageMutation } from "@/api/query"
 import { MessageCircle, Share2, ThumbsUp } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+import { Textarea2 } from "./Textarea2"
+import { Button } from "./ui/button"
 import { Skeleton } from "./ui/skeleton"
 
 function splitHashtags(input: string) {
@@ -28,6 +31,7 @@ export interface FacebookPostProps {
 // 右上角新增漢堡按鈕
 export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
   const tokens = React.useMemo(() => splitHashtags(text), [text])
+  const createImageMutation = useCreateImageMutation()
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-4">
@@ -57,18 +61,39 @@ export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
             }
           })}
           {isLoading && (
-            <div className="flex flex-col gap-2">
+            <span className="flex flex-col gap-2">
               <Skeleton className="w-full h-4" />
               <Skeleton className="w-full h-4" />
               <Skeleton className="w-full h-4" />
-            </div>
+            </span>
           )}
         </p>
-        {/* <img
-          src="/api/placeholder/500/300"
-          alt="Beach"
-          className="mt-3 w-full h-64 object-cover rounded-lg"
-        /> */}
+        {Boolean(createImageMutation.data) && (
+          <img
+            className="mt-3 w-full object-cover rounded-lg"
+            src={createImageMutation.data.data[0].url}
+            alt={createImageMutation.data.data[0].revised_prompt}
+          />
+        )}
+        {!isLoading && Boolean(text) && (
+          <div className="mt-3 w-full h-64 object-cover rounded-lg bg-slate-50 flex justify-center items-center">
+            <div className="flex flex-col gap-2 w-3/4">
+              <Textarea2
+                placeholder="輸入使用者指示，如圖片風格、主題、場景等"
+                minRows={2}
+              />
+              <Button
+                type="button"
+                onClick={() =>
+                  createImageMutation.mutate({ text, userInstruction: "" })
+                }
+                disabled={createImageMutation.isPending}
+              >
+                {createImageMutation.isPending ? "產生圖片..." : "產生圖片"}
+              </Button>
+            </div>
+          </div>
+        )}
         {/* <div className="w-full h-[300px] flex justify-center items-center bg-slate-50 rounded-lg">
           圖片
         </div> */}
@@ -80,21 +105,21 @@ export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
             className="flex items-center space-x-2 hover:text-blue-600 active:animate-wiggle"
           >
             <ThumbsUp size={20} />
-            <span>Like</span>
+            <span>讚</span>
           </button>
           <button
             type="button"
-            className="flex items-center space-x-2 hover:text-blue-600"
+            className="flex items-center space-x-2 hover:text-blue-600 active:animate-wiggle"
           >
             <MessageCircle size={20} />
-            <span>Comment</span>
+            <span>留言</span>
           </button>
           <button
             type="button"
-            className="flex items-center space-x-2 hover:text-blue-600"
+            className="flex items-center space-x-2 hover:text-blue-600 active:animate-wiggle"
           >
             <Share2 size={20} />
-            <span>Share</span>
+            <span>分享</span>
           </button>
         </div>
       </div>
