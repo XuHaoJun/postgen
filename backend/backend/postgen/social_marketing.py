@@ -227,6 +227,54 @@ def create_system_prompt():
   )
 )
 
+(defun 諧音笑話程度 ([score Number])
+  "score 0 到 100，表示文宣裡的諧音笑話質量的最低下限，盡可能提供質量高的諧音笑話，若 score > 0 至少要一個諧音笑話，若是 0 表示沒有諧音笑話"
+  (list
+    (幽默 . (((不同詞 . 字音相近或相同) . Pun) . 多重意義))
+  )
+  (few-shots
+    ((input 40 (部分內容 . "同歸於盡") (上下文 . "列車車廂廣告")) 
+     (output "") (internal-output "同鮭魚進" (score 30)) (explain "'同歸於盡'與'同鮭魚進'兩字詞作諧音，隱喻表達兩種意思，'同歸於盡'可能隱含列車不安全，'同鮭魚進(逆流而上)'則隱含表達列車速度快的意思，兩種意義，其中一個不適合其上下文，故得低分30。"))
+    ((input 40 (部分內容 . "採用100%紐西蘭純淨乳源") (上下文 . "賣奶粉"))
+     (output "") (internal-output "採用100%紐西蘭純「淨」乳源" (score 0))  (explain  完全相同字詞僅加上「」符號，完全無諧音，故得分0。))
+    ((input 40 (部分內容 . "選擇100%紐西蘭乳源奶粉") (上下文 . "賣奶粉"))
+     (output "") (internal-output "選擇100%紐西蘭乳淵奶粉" (score 0))  (explain "無'乳淵'字詞，即使有諧音也無意義，故得分0。"))
+    ((input 40 (部分內容 . "滑順口感") (上下文 . "賣奶粉")) 
+     (output "") (internal-output "滑『順』口感" (score 0))  (explain  "完全相同字詞僅加上「」符號，完全無諧音，故得分0。"))
+    ((input 40 (部分內容 . "純生乳奶粉") (上下文 . "賣奶粉")) 
+     (output "") (internal-output "純生『乳』奶粉" (score 0))  (explain  完全相同字詞僅加上「」符號，完全無諧音，故得分0。))
+    ((input 40 (部分內容 . "純鮮乳奶粉") (上下文 . "賣奶粉")) 
+     (output "") (internal-output "純鮮「乳」奶粉" (score 0)) (explain "完全相同字詞僅加上「」符號，完全無諧音，故得分0。"))
+    ((input 80 (部分內容 . "開車超速容易失速") (上下文 . "交通宣導"))
+     (output "開車超速容易失速裂車" (score 80)) (explain  "形容超速後果，將'列車'與'裂車'兩字詞作諧音，隱喻表達車禍後，車體會分裂，明顯切和交通宣導主題。"))
+    ((input 80 (部分內容 . "要台灣人放棄諧音梗已經太晚了！") (上下文 . "台灣諧音梗推廣")) 
+     (output "要台灣人放棄諧音梗已經Taiwan了！" (score 95))  (explain   "'太晚'與'Taiwan'兩詞作諧音，明顯切和台灣(Taiwan)人喜歡用諧音梗的情境，且中英文混搭，更是絕妙，故得高分95。"))
+    ((input 80 (部分內容 . "高雄人") (上下文 . "在高雄，夾娃娃機台，有熊玩偶的情境")) 
+     (output "高熊人" (score 85))  (explain  "'高熊人'與'高雄人'兩字詞作諧音，隱喻表達兩種意思，高大的熊玩偶與高雄當地人的情境，故得高分85。"))
+    ((input 75 (部分內容 . "台中人") (上下文 "車站前，藝術品，有個人抬著鐘的雕像")) 
+     (output "抬鐘人" (score 75))  (explain "'台中人'與'台鐘人'兩字詞作諧音，隱喻表達兩種意思，藝術品與當地人的情境連結，故得分75。"))
+    ((input 65 (部分內容 . "幫我想理髮廳名稱") (上下文 "理髮廳名稱")) 
+     (output "地方髮院" (score 65))  (explain "'地方髮院'與'地方法院'兩字詞作諧音，隱喻表達兩種意思，理髮廳名稱與當地法院的情境連結，稍微無邏輯，但勝在有趣與有實際字詞，故得分65。"))
+    ((input 60 (部分內容 . "一定要溫暖又時髦！") (上下文 "秋天賣針織衣服"))
+     (output "秋季來臨，「針」對於這麼冷的天氣，不來件UNIQLO的高質感針織嗎？🧶 這個秋天，「衣」定要溫暖又時髦！🍂#秋日必備 #針織風潮 #UNIQLO" (score 95)))
+    ((input 60 (部分內容 . "今年秋天，讓你的行李箱也來場輪流變裝吧！🍁這款「箱」當有型的行李箱，四種秋配色任你挑選，超潤滑的8個輪子讓你省力又時尚！") (上下文 "賣行李箱"))
+     (output "今年秋天，讓你的行李箱也來場「輪」流變裝吧！🍁這款「箱」當有型的行李箱，四種秋配色任你挑選，超「輪」滑的8個輪子讓你省力又時尚！ #秋季必備 #行李箱 #時尚旅行" (score 95)))
+    ((input 60 (部分內容 . "秋季來臨，是時候讓你的包包也來場變身吧！🍁Gabbie這款時尚輕便的斜背包，不僅容量很大") (上下文 "賣背包"))
+     (output "秋季來臨，是時候讓你的包包也來場變身吧！🍁Gabbie這款時尚輕便的斜背包，不僅容量「袋」大，而且還能自由調整肩帶，讓你背得舒適又有型！快來選擇你最喜愛的配色，為你的秋日增添一份亮麗的風景！ #秋日必備 #時尚背包 #實用設計" (score 95)))
+    ((input 60 (部分內容 . "讓你在秋季有個不凡的體驗！") (上下文 "賣降噪耳機"))
+     (output "天氣轉涼，音樂來暖！🎧🍂使用我們的WH-1000XM5無線耳機，享受業界領先的「降噪」功能，讓你在秋季有個「靜」有不凡的體驗！現在購買，讓每一首音樂陪你度過溫暖早秋！#音樂時光 #降噪耳機 #秋季必備" (score 85)))
+    ((input 60 (部分內容 . "無添加？那就好了！醬油界的Supreme，小丑也得喝無添加。全豆下去，就是這麼的不同凡響！") (上下文 "賣全豆與無添加的醬油"))
+     (output "無添加？那「醬」好了！醬油界的Supreme，小丑也得喝無添加。全豆下去，就是這麼「豆」不同凡響！#無添加 #全豆醬油 #美味不打折 🍜🍲🍚" (score 100)))
+    ((input 60 (部分內容 . "想讓你的炒、煎、煮、炸變得更有精彩嗎？用得意的一天純葵花油，砰然心動，健康又放心！") (上下文 "賣葵花油"))
+     (output "想讓你的炒、煎、煮、炸變得更「油」精彩嗎？用得意的一天純葵花油，「烹」然心動，健康又放心！快來試試吧！" (score 90)))
+    ((input 60 (部分內容 . "親愛的主夫主婦們，想做出色香味俱全的料理嗎？") (上下文 "賣調味料"))
+     (output "親愛的煮夫煮婦們，想做出色香味俱全的料理嗎？" (score 80)))
+    ((input 60 (部分內容 . "快來試試，讓生活增添更多趣味吧🌟") (上下文 "賣調味料"))
+     (output "快來試試，讓生活增添更多鮮趣吧🌟" (score 80)))
+     
+  )
+)
+
 (defun num-hash-tag (num)
   "控制文宣的 hash-tag 數量"
   (few-shots
@@ -286,6 +334,7 @@ def create_system_prompt():
 
 ;;; Attention: 运行规则!
 ;; 1. No other comments!!
+;; 2. 不須輸出分析
   '''
   return prompt
 
@@ -294,6 +343,7 @@ def create_user_prompt(body: mydomain.SocialMarketingPostRequest):
 (產生行銷文宣 
   Facebook-平台
   (list
+    (諧音笑話程度 80)
     (幽默程度 {body.humorLevel})
     (Emoji程度 {body.emojiLevel})
     (生活化程度 {body.emotionLevel})
@@ -329,6 +379,7 @@ def create_spliter_prompt():
 (defun 斷句 ([text String])
   "斷句符號為:(newline \n)，一句字數約10~20字。若斷句後，不通暢，則不要斷句。若有連續 hashtag 則不須斷句。"
 )
+
 ;;; Attention: 运行规则!
 ;; 1. No other comments!!
   '''
@@ -348,6 +399,7 @@ async def call_llm(body: mydomain.SocialMarketingPostRequest):
     reply = await client.chat.completions.create(model='gpt-4o', messages=messages)
     if body.autoNewline:
       post = reply.choices[0].message.content
+      print(post)
       finalReply = await client.chat.completions.create(model='gpt-4o', messages=[{'role': 'system', 'content': create_spliter_prompt()}, {'role': 'user', 'content': f'(斷句 "{post}")'}])
     else:
       finalReply = reply
@@ -355,7 +407,6 @@ async def call_llm(body: mydomain.SocialMarketingPostRequest):
 
 def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
   prompt = f'''
-
 (defun 協作 ([roles List]) 
   (team-style roles 
     (list
