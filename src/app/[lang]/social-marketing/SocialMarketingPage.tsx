@@ -6,6 +6,7 @@ import { formatResponseError } from "@/utils/formatResponseError"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Trans } from "@lingui/macro"
 import { useForm } from "react-hook-form"
+import * as R from "remeda"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -46,6 +47,7 @@ const FormSchema = z.object({
   topicRelatedLevel: defaultNumberZod(),
   creativeLevel: defaultNumberZod(),
   sectorLevel: defaultNumberZod(),
+  punLevel: defaultNumberZod(),
 })
 
 export default function MarketingPage() {
@@ -66,13 +68,18 @@ export default function MarketingPage() {
       topicRelatedLevel: 50,
       creativeLevel: 50,
       sectorLevel: 10,
+      punLevel: 0,
     },
   })
 
   const createPostMutation = useCreatePostMutation()
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    createPostMutation.mutate(data)
+    const body = R.clone(data)
+    if (body.humorLevel < 90 || body.creativeLevel < 90) {
+      body.punLevel = 0
+    }
+    createPostMutation.mutate(body)
   }
 
   const levels: Array<{
@@ -86,9 +93,11 @@ export default function MarketingPage() {
       | "topicRelatedLevel"
       | "creativeLevel"
       | "sectorLevel"
+      | "punLevel"
     >
     label: string
     description?: string[]
+    step?: number
   }> = React.useMemo(
     () => [
       { name: "humorLevel", label: "幽默程度" },
@@ -102,6 +111,11 @@ export default function MarketingPage() {
       { name: "topicRelatedLevel", label: "主題相關性程度" },
       { name: "showyLevel", label: "浮誇程度" },
       { name: "sectorLevel", label: "業配程度" },
+      {
+        name: "punLevel",
+        label: "諧音程度",
+        description: ["僅在幽默程度與創意程度>=90時生效"],
+      },
     ],
     []
   )
@@ -181,7 +195,7 @@ export default function MarketingPage() {
                             <OneThumbSlider
                               min={0}
                               max={100}
-                              step={10}
+                              step={level.step ?? 10}
                               {...field}
                             />
                           </FormControl>
@@ -274,10 +288,7 @@ export default function MarketingPage() {
                     <FormItem className="col-span-12">
                       <FormLabel required>使用者指示</FormLabel>
                       <FormControl>
-                        <Textarea2
-                          {...field}
-                          minRows={4}
-                        />
+                        <Textarea2 {...field} minRows={4} />
                       </FormControl>
                       <FormDescription>
                         可輸入產品介紹(若已填入產品介紹圖片，可省略)，和你的需求，如&quot;配合國慶日&quot;、

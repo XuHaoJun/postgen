@@ -16,6 +16,7 @@ class SocialMarketingPostRequest(BaseModel):
     topicRelatedLevel: int = Body(..., example=50, ge=0, le=100)
     creativeLevel: int = Body(..., example=50, ge=0, le=100)
     sectorLevel: int = Body(..., example=10, ge=0, le=100)
+    punLevel: int = Body(..., example=0, ge=0, le=100)
 
 class SocialMarketingImagetRequest(BaseModel):
     text: str = Body(..., example="文章")

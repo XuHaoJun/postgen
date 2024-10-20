@@ -343,7 +343,7 @@ def create_user_prompt(body: mydomain.SocialMarketingPostRequest):
 (產生行銷文宣 
   Facebook-平台
   (list
-    (諧音笑話程度 80)
+    (諧音笑話程度 {body.punLevel})
     (幽默程度 {body.humorLevel})
     (Emoji程度 {body.emojiLevel})
     (生活化程度 {body.emotionLevel})
