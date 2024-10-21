@@ -2,9 +2,12 @@
 
 import * as React from "react"
 import { useCreatePostMutation } from "@/api/query"
+import { envsAtom } from "@/atoms"
+import { useHydrateEnvsAtom, type getEnvs } from "@/atoms/hooks-server"
 import { formatResponseError } from "@/utils/formatResponseError"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Trans } from "@lingui/macro"
+import { useAtom } from "jotai"
 import { useForm } from "react-hook-form"
 import * as R from "remeda"
 import { z } from "zod"
@@ -50,7 +53,16 @@ const FormSchema = z.object({
   punLevel: defaultNumberZod(),
 })
 
-export default function MarketingPage() {
+export default function SocialMarketingPage({
+  envs,
+}: {
+  envs?: ReturnType<typeof getEnvs>
+}) {
+  useHydrateEnvsAtom(envs)
+
+  const [foo, setFoo] = useAtom(envsAtom)
+  console.log(foo)
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -132,15 +144,6 @@ export default function MarketingPage() {
     ],
     []
   )
-
-  const text = `
-國慶日驚喜限定版！
-南瓜香料拿鐵的美妙滋味，帶給你滿滿的秋季氛圍☕️🍂
-星巴克膠囊咖啡，讓你在家也能享受咖啡館的品質！
-
-🌟立即選購，享受獨特的節日風味！
-#國慶日活動 #星巴克膠囊 #南瓜香料拿鐵
-    `
 
   return (
     <div className="md:container py-6">
