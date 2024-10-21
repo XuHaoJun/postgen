@@ -52,6 +52,8 @@
     "react-type-animation": "^3.2.0",
     "recharts": "^2.13.0",
     "remeda": "^2.15.2",
+    "rxdb": "^15.36.1",
+    "rxjs": "^7.8.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "url-join": "^5.0.0",
