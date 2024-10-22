@@ -23,13 +23,22 @@ function splitHashtags(input: string) {
 }
 
 export interface FacebookPostProps {
-  text: string
+  data: {
+    id: string
+    text: string
+  }
   isLoading?: boolean
+  disableImageGenerator?: boolean
 }
 
 // TODO
 // 右上角新增漢堡按鈕
-export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
+export const FacebookPost = ({
+  data,
+  isLoading,
+  disableImageGenerator,
+}: FacebookPostProps) => {
+  const { text } = data
   const tokens = React.useMemo(() => splitHashtags(text), [text])
   const createImageMutation = useCreateImageMutation()
   const [userInstruction, setUserInstruction] = React.useState("")
@@ -76,7 +85,7 @@ export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
             alt={createImageMutation.data.data[0].revised_prompt}
           />
         )}
-        {!isLoading && Boolean(text) && (
+        {!isLoading && Boolean(text) && !disableImageGenerator && (
           <div className="mt-3 w-full h-64 object-cover rounded-lg bg-slate-50 flex justify-center items-center">
             <div className="flex flex-col gap-2 w-3/4">
               <Textarea2

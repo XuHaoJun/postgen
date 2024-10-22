@@ -1,4 +1,4 @@
-import { getEnvs } from "@/atoms/hooks-server"
+import { getEnvs } from "@/atoms/hooks"
 
 import SocialMarketingPage from "./SocialMarketingPage"
 
