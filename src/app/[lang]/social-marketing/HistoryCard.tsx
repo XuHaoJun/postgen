@@ -43,7 +43,7 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
             {finalPosts.map((p) => (
               <div key={p.id} className="w-full">
                 <FacebookPost
-                  data={{ id: p.id, text: p.text }}
+                  data={p}
                   disableImageGenerator
                 />
               </div>

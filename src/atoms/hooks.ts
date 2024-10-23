@@ -1,6 +1,7 @@
+import { useAtomValue } from "jotai"
 import { useHydrateAtoms } from "jotai/utils"
 
-import { envsAtom } from "./atoms"
+import { dbAtom, envsAtom } from "./atoms"
 
 let ENVS: { NODE_ENV?: string } | undefined
 
@@ -13,4 +14,8 @@ export function getEnvs() {
 
 export function useHydrateEnvsAtom(envs: ReturnType<typeof getEnvs>) {
   useHydrateAtoms([[envsAtom, envs]])
+}
+
+export function useDb() {
+  return useAtomValue(dbAtom)
 }
