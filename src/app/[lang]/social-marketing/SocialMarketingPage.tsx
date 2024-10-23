@@ -2,13 +2,12 @@
 
 import * as React from "react"
 import { useCreatePostMutation } from "@/api/query"
-import { dbAtom, useInitializeDb } from "@/atoms"
-import { useHydrateEnvsAtom, type getEnvs } from "@/atoms/hooks"
+import { useInitializeDb } from "@/atoms"
+import { useDb, useHydrateEnvsAtom, type getEnvs } from "@/atoms/hooks"
 import { SocialMarketingPostFormSchema } from "@/domain/SocialMarketing"
 import { formatResponseError } from "@/utils/formatResponseError"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Trans } from "@lingui/macro"
-import { useAtomValue } from "jotai"
 import { useForm } from "react-hook-form"
 import * as R from "remeda"
 import { z } from "zod"
@@ -66,7 +65,7 @@ export default function SocialMarketingPage({
   })
 
   const createPostMutation = useCreatePostMutation()
-  const db = useAtomValue(dbAtom)
+  const db = useDb()
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const body = R.clone(data)
