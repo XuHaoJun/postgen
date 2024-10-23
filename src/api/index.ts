@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosResponse } from "axios"
 
 export const axiosMainInstance = axios.create({
   adapter: "fetch",
@@ -7,7 +7,10 @@ export const axiosMainInstance = axios.create({
 
 export async function createPost(body: any) {
   return axiosMainInstance
-    .post("/social-marketing/posts", body)
+    .post<
+      any,
+      AxiosResponse<{ id: string; text: string; createdAt: string }>
+    >("/social-marketing/posts", body)
     .then((res) => res.data)
 }
 

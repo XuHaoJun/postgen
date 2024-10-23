@@ -2,6 +2,9 @@
 
 import * as React from "react"
 import { useCreatePostMutation } from "@/api/query"
+import { useInitializeDb } from "@/atoms"
+import { useDb, useHydrateEnvsAtom, type getEnvs } from "@/atoms/hooks"
+import { SocialMarketingPostFormSchema } from "@/domain/SocialMarketing"
 import { formatResponseError } from "@/utils/formatResponseError"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Trans } from "@lingui/macro"
@@ -28,29 +31,18 @@ import { Switch } from "@/components/ui/switch"
 import { FacebookPost } from "@/components/FacebookPost"
 import { Textarea2 } from "@/components/Textarea2"
 
-function defaultNumberZod() {
-  return z.number().gte(0).lte(100)
-}
+import { HistoryCard } from "./HistoryCard"
 
-const FormSchema = z.object({
-  startStyle: z.string().min(1, { message: "請選擇開頭形式" }),
-  numCharacter: z.string(),
-  numHashtag: z.string(),
-  imageUrl: z.string(),
-  userInstruction: z.string().min(1, { message: "請輸入使用者指示" }),
-  autoNewline: z.boolean(),
-  humorLevel: defaultNumberZod(),
-  emojiLevel: defaultNumberZod(),
-  showyLevel: defaultNumberZod(),
-  emotionLevel: defaultNumberZod(),
-  professionalLevel: defaultNumberZod(),
-  topicRelatedLevel: defaultNumberZod(),
-  creativeLevel: defaultNumberZod(),
-  sectorLevel: defaultNumberZod(),
-  punLevel: defaultNumberZod(),
-})
+const FormSchema = SocialMarketingPostFormSchema
 
-export default function MarketingPage() {
+export default function SocialMarketingPage({
+  envs,
+}: {
+  envs: ReturnType<typeof getEnvs>
+}) {
+  useHydrateEnvsAtom(envs)
+  useInitializeDb()
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -73,14 +65,24 @@ export default function MarketingPage() {
   })
 
   const createPostMutation = useCreatePostMutation()
+  const db = useDb()
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     const body = R.clone(data)
     if (body.humorLevel < 90 || body.creativeLevel < 90) {
       body.punLevel = 0
     }
-    createPostMutation.mutate(body)
+    const resp = await createPostMutation.mutateAsync(body)
+    db?.collections["social-marketing-posts"].upsert(resp)
   }
+
+  const skipIds = React.useMemo(() => {
+    if (createPostMutation.data) {
+      return [createPostMutation.data.id]
+    } else {
+      return []
+    }
+  }, [createPostMutation.data])
 
   const levels: Array<{
     name: keyof Pick<
@@ -132,15 +134,6 @@ export default function MarketingPage() {
     ],
     []
   )
-
-  const text = `
-國慶日驚喜限定版！
-南瓜香料拿鐵的美妙滋味，帶給你滿滿的秋季氛圍☕️🍂
-星巴克膠囊咖啡，讓你在家也能享受咖啡館的品質！
-
-🌟立即選購，享受獨特的節日風味！
-#國慶日活動 #星巴克膠囊 #南瓜香料拿鐵
-    `
 
   return (
     <div className="md:container py-6">
@@ -312,7 +305,7 @@ export default function MarketingPage() {
               </CardContent>
             </Card>
           </div>
-          <div className="w-full md:w-1/2 order-2 md:order-1">
+          <div className="w-full md:w-1/2 order-2 md:order-1 flex flex-col gap-2">
             <Card>
               <CardHeader>
                 <CardTitle>
@@ -328,12 +321,13 @@ export default function MarketingPage() {
                   </div>
                 ) : (
                   <FacebookPost
-                    text={createPostMutation.data || ""}
+                    data={{ id: "", text: createPostMutation.data?.text || "" }}
                     isLoading={createPostMutation.isPending}
                   />
                 )}
               </CardContent>
             </Card>
+            <HistoryCard skipIds={skipIds} />
           </div>
         </form>
       </Form>
