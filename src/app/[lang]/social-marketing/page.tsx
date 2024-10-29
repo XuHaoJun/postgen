@@ -1,5 +1,7 @@
-import SocialMarketingPage from "./SocialMarketingPage";
+import { getEnvs } from "@/atoms/hooks"
+
+import SocialMarketingPage from "./SocialMarketingPage"
 
 export default function SocialMarketingPageServer() {
-  return <SocialMarketingPage />
+  return <SocialMarketingPage envs={getEnvs()} />
 }
