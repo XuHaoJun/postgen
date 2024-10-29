@@ -1,8 +1,16 @@
 import * as React from "react"
 import { dbAtom } from "@/atoms"
 import { useAtomValue } from "jotai"
+import { Ellipsis, Trash2 } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FacebookPost } from "@/components/FacebookPost"
@@ -20,6 +28,7 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
       .find({})
       .sort({ createdAt: "desc" })
       .$.subscribe((data) => {
+        console.log("?", data)
         setPosts(data.map((x) => x.toJSON()))
       })
     return () => {
@@ -37,7 +46,10 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>歷史紀錄</CardTitle>
+        <CardTitle className="flex justify-between items-center">
+          歷史紀錄
+          <HistoryDropdownButton />
+        </CardTitle>
       </CardHeader>
       {(() => {
         if (!db) {
@@ -62,5 +74,35 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
         )
       })()}
     </Card>
+  )
+}
+
+function HistoryDropdownButton() {
+  const db = useAtomValue(dbAtom)
+  const handleDeleteAll = React.useCallback(() => {
+    db?.collections["social-marketing-posts"].find({}).remove()
+  }, [db])
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="bg-[#f3f3f3] border-none"
+          type="button"
+        >
+          <Ellipsis className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuItem
+          className="text-red-500 flex gap-2"
+          onClick={handleDeleteAll}
+        >
+          <Trash2 />
+          <span>清除所有歷史紀錄</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
