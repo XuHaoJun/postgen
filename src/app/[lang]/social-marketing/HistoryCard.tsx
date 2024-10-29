@@ -17,6 +17,7 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
     if (!db) return
     const sub = db?.collections["social-marketing-posts"]
       .find({})
+      .sort({ createdAt: 'desc' })
       .$.subscribe((data) => {
         setPosts(data.map((x) => x.toJSON()))
       })
