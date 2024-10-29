@@ -1,9 +1,7 @@
 import * as React from "react"
 import { useCreateImageMutation } from "@/api/query"
-import { useDb } from "@/atoms/hooks"
 import { MessageCircle, Share2, ThumbsUp } from "lucide-react"
 
-import { imageToDataUrl } from "@/lib/imageToDataUrl"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import { Textarea2 } from "./Textarea2"
@@ -25,39 +23,15 @@ function splitHashtags(input: string) {
 }
 
 export interface FacebookPostProps {
-  data: {
-    id: string
-    text: string
-    imageUrl?: string
-  }
+  text: string
   isLoading?: boolean
-  disableImageGenerator?: boolean
 }
 
 // TODO
 // 右上角新增漢堡按鈕
-export const FacebookPost = ({
-  data,
-  isLoading,
-  disableImageGenerator,
-}: FacebookPostProps) => {
-  const { text } = data
+export const FacebookPost = ({ text, isLoading }: FacebookPostProps) => {
   const tokens = React.useMemo(() => splitHashtags(text), [text])
   const createImageMutation = useCreateImageMutation()
-  const db = useDb()
-  async function handleGenerateImage() {
-    const body = await createImageMutation.mutateAsync({
-      text,
-      userInstruction,
-    })
-    const imgUrl = body.data.data[0].url
-    const dataUrl = await imageToDataUrl(imgUrl)
-    db?.collections["social-marketing-posts"].upsert({
-      id: data.id,
-      imageUrl: dataUrl,
-    })
-  }
-
   const [userInstruction, setUserInstruction] = React.useState("")
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
@@ -102,14 +76,7 @@ export const FacebookPost = ({
             alt={createImageMutation.data.data[0].revised_prompt}
           />
         )}
-        {Boolean(data.imageUrl) && (
-          <img
-            className="mt-3 w-full object-cover rounded-lg"
-            src={data.imageUrl}
-            alt="none"
-          />
-        )}
-        {!isLoading && Boolean(text) && !disableImageGenerator && (
+        {!isLoading && Boolean(text) && (
           <div className="mt-3 w-full h-64 object-cover rounded-lg bg-slate-50 flex justify-center items-center">
             <div className="flex flex-col gap-2 w-3/4">
               <Textarea2
@@ -120,7 +87,9 @@ export const FacebookPost = ({
               />
               <Button
                 type="button"
-                onClick={handleGenerateImage}
+                onClick={() =>
+                  createImageMutation.mutate({ text, userInstruction })
+                }
                 disabled={createImageMutation.isPending}
               >
                 {createImageMutation.isPending ? "產生圖片..." : "產生圖片"}
