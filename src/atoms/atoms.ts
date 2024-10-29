@@ -1,10 +1,6 @@
 import * as React from "react"
 import { SocialMarketingPostFormSchema } from "@/domain/SocialMarketing"
 import { atom, useAtom, useAtomValue } from "jotai"
-import { addRxPlugin, createRxDatabase } from "rxdb"
-import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode"
-import { getRxStorageDexie } from "rxdb/plugins/storage-dexie"
-import { firstValueFrom } from "rxjs"
 import zodToJsonSchema from "zod-to-json-schema"
 
 export const envsAtom = atom<{ NODE_ENV?: string }>({})
@@ -41,6 +37,10 @@ export const socialMarketingPostSchema = {
   required: ["id", "input", "output", "createdAt"],
 }
 export async function createClientDb() {
+  const [{ createRxDatabase }, { getRxStorageDexie }] = await Promise.all([
+    import("rxdb"),
+    import("rxdb/plugins/storage-dexie"),
+  ])
   return createRxDatabase({
     name: "postgen",
     storage: getRxStorageDexie(),
@@ -57,7 +57,13 @@ export function useInitializeDb() {
   const [db, setDb] = useAtom(dbAtom)
   React.useEffect(() => {
     async function run() {
+      const [{ addRxPlugin }, { RxDBQueryBuilderPlugin }] = await Promise.all([
+        import("rxdb"),
+        import("rxdb/plugins/query-builder"),
+      ])
+      addRxPlugin(RxDBQueryBuilderPlugin)
       if (envs.NODE_ENV !== "production") {
+        const { RxDBDevModePlugin } = await import("rxdb/plugins/dev-mode")
         addRxPlugin(RxDBDevModePlugin)
       }
       if (!db) {

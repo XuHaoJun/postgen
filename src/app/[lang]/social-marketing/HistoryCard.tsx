@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FacebookPost } from "@/components/FacebookPost"
 
 interface HistoryCardProps {
@@ -17,7 +18,7 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
     if (!db) return
     const sub = db?.collections["social-marketing-posts"]
       .find({})
-      .sort({ createdAt: 'desc' })
+      .sort({ createdAt: "desc" })
       .$.subscribe((data) => {
         setPosts(data.map((x) => x.toJSON()))
       })
@@ -38,20 +39,28 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
       <CardHeader>
         <CardTitle>歷史紀錄</CardTitle>
       </CardHeader>
-      <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px] max-h-[50vh] overflow-auto">
-        <ScrollArea>
-          <div className="flex flex-col gap-6">
-            {finalPosts.map((p) => (
-              <div key={p.id} className="w-full">
-                <FacebookPost
-                  data={p}
-                  disableImageGenerator
-                />
+      {(() => {
+        if (!db) {
+          return (
+            <CardContent>
+              <Skeleton className="w-full h-[100px] " />
+            </CardContent>
+          )
+        }
+        return (
+          <CardContent className="bg-[#f3f3f3] p-[30px] md:p-[100px] max-h-[50vh] overflow-auto">
+            <ScrollArea>
+              <div className="flex flex-col gap-6">
+                {finalPosts.map((p) => (
+                  <div key={p.id} className="w-full">
+                    <FacebookPost data={p} disableImageGenerator />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </CardContent>
+            </ScrollArea>
+          </CardContent>
+        )
+      })()}
     </Card>
   )
 }
