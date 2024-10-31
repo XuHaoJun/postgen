@@ -25,24 +25,16 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
   React.useEffect(() => {
     if (!db) return
     const sub = db?.collections["social-marketing-posts"]
-      .find({})
+      .find({ id: { $nin: skipIds } } as any)
       .sort({ createdAt: "desc" })
       .$.subscribe((data) => {
-        console.log("?", data)
         setPosts(data.map((x) => x.toJSON()))
       })
     return () => {
       sub?.unsubscribe()
     }
-  }, [db])
-  const finalPosts = React.useMemo(
-    () =>
-      Array.isArray(skipIds)
-        ? posts.filter((x) => skipIds?.includes(x.id) === false)
-        : posts,
-    [posts, skipIds]
-  )
-
+  }, [db, skipIds])
+  const finalPosts = posts
   return (
     <Card>
       <CardHeader>
@@ -95,13 +87,15 @@ function HistoryDropdownButton() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuItem
-          className="text-red-500 flex gap-2"
-          onClick={handleDeleteAll}
-        >
-          <Trash2 />
-          <span>清除所有歷史紀錄</span>
-        </DropdownMenuItem>
+        {db && (
+          <DropdownMenuItem
+            className="text-red-500 flex gap-2"
+            onClick={handleDeleteAll}
+          >
+            <Trash2 />
+            <span>清除所有歷史紀錄</span>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
