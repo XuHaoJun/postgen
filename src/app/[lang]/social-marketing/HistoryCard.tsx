@@ -25,7 +25,7 @@ export function HistoryCard({ skipIds }: HistoryCardProps) {
   React.useEffect(() => {
     if (!db) return
     const sub = db?.collections["social-marketing-posts"]
-      .find({ id: { $nin: skipIds } } as any)
+      .find(skipIds?.length ? { selector: { id: { $nin: skipIds } } } : {})
       .sort({ createdAt: "desc" })
       .$.subscribe((data) => {
         setPosts(data.map((x) => x.toJSON()))
