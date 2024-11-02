@@ -23,19 +23,26 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-
   webpack: (config) => {
     config.module.rules.push({
       test: /\.po$/,
       use: {
         loader: "@lingui/loader",
       },
-    });
-    return config;
+    })
+    return config
   },
   experimental: {
     swcPlugins: [["@lingui/swc-plugin", {}]],
+    turbo: {
+      rules: {
+        "*.po": {
+          loaders: ["@lingui/loader"],
+          as: "*.js",
+        },
+      },
+    },
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

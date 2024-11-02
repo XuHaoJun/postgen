@@ -25,7 +25,8 @@ export async function generateStaticParams() {
   return linguiConfig.locales.map((lang: any) => ({ lang }))
 }
 
-export async function generateMetadata({ params }: PageLangParam) {
+export async function generateMetadata(props: PageLangParam) {
+  const params = await props.params
   const allI18nInstances = await getAllI18nInstances()
   const i18n = allI18nInstances[params.lang]!
 
@@ -37,14 +38,12 @@ export async function generateMetadata({ params }: PageLangParam) {
 export default withLinguiLayout(async function RootLayout(
   props: Readonly<{
     children: React.ReactNode
-    params: any
+    params: Promise<{ lang: string }>
     Component: any
   }>
 ) {
-  const {
-    children,
-    params: { lang },
-  } = props
+  const { children } = props
+  const lang = (await props.params).lang
   const allMessages = await getAllMessages()
   return (
     <html lang={lang} dir="ltr" suppressHydrationWarning>
@@ -67,7 +66,7 @@ export default withLinguiLayout(async function RootLayout(
               disableTransitionOnChange
             >
               <TooltipProvider>
-                  <StandardSiteLayout>{children}</StandardSiteLayout>
+                <StandardSiteLayout>{children}</StandardSiteLayout>
               </TooltipProvider>
             </ThemeProvider>
           </LinguiClientProvider>
