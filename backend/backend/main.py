@@ -25,7 +25,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    os.getenv("CORS_URL") or "https://xuhaojun.github.io"
+    os.environ.get("CORS_URL") or "https://xuhaojun.github.io"
 ]
 
 app.add_middleware(
@@ -37,13 +37,13 @@ app.add_middleware(
 )
 
 @app.post("/social-marketing/posts")
-@limiter.limit(os.getenv("POSTS_CREATE_LIMIT") or "1/1minute")
+@limiter.limit(os.environ.get("POSTS_CREATE_LIMIT") or "1/1minute")
 async def create_post(request: Request, data: mydomain.SocialMarketingPostRequest = Body(...)):
     text = await social_marketing.call_llm(data)
     return {"id": uuid.uuid4(), "text": text, "createdAt": datetime.datetime.now()}
 
 @app.post("/social-marketing/images")
-@limiter.limit(os.getenv("POSTS_CREATE_LIMIT") or "1/1minute")
+@limiter.limit(os.environ.get("POSTS_CREATE_LIMIT") or "1/1minute")
 async def create_post(request: Request, data: mydomain.SocialMarketingImagetRequest = Body(...)):
     resp = await social_marketing.call_llm_img(data)
     return resp

@@ -1,20 +1,18 @@
 import os
 import argparse
-from openai import AsyncAzureOpenAI
+from openai import AsyncOpenAI
 from .. import mydomain
 
 def create_client():
-  return AsyncAzureOpenAI(
-    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version="2024-02-01"
+  return AsyncOpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY") or "<OPENAI_API_KEY>",
+    base_url=os.environ.get("OPENAI_BASE_URL") or "https://api.openai.com/v1"
   )
 
 def create_client_img():
-  return AsyncAzureOpenAI(
-    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT_IMG") or os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY_IMG") or os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version="2024-02-01"
+  return AsyncOpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY_IMG") or "<OPENAI_API_KEY_IMG>",
+    base_url=os.environ.get("OPENAI_BASE_URL_IMG") or "https://api.openai.com/v1"
   )
 
 """ 
@@ -27,7 +25,6 @@ def create_system_prompt():
   prompt = '''
 ;; 作者: 徐浩鈞
 ;; 版本: 0.1
-;; 模型: OpenAI GPT-4o
 ;; 用途: 建立行銷文宣
 
 ;; 设定如下内容为你的 *System Prompt*
@@ -91,7 +88,7 @@ def create_system_prompt():
 (defun 去AI味專家 ()
   "你是一個專業的去AI味專家"
   (list
-    (熟知 . (AI LLM ChatGPT GPT-4o))
+    (熟知 . (AI LLM ChatGPT))
     (同理心 . 人類)
   )
   (few-shots 
@@ -396,11 +393,11 @@ async def call_llm(body: mydomain.SocialMarketingPostRequest):
     }
   ]
   async with create_client() as client:
-    reply = await client.chat.completions.create(model='gpt-4o', messages=messages)
+    reply = await client.chat.completions.create(model='', messages=messages)
     if body.autoNewline:
       post = reply.choices[0].message.content
       print(post)
-      finalReply = await client.chat.completions.create(model='gpt-4o', messages=[{'role': 'system', 'content': create_spliter_prompt()}, {'role': 'user', 'content': f'(斷句 "{post}")'}])
+      finalReply = await client.chat.completions.create(model=os.environ.get("OPENAI_MODEL") or "llama4-maverick-17b", messages=[{'role': 'system', 'content': create_spliter_prompt()}, {'role': 'user', 'content': f'(斷句 "{post}")'}])
     else:
       finalReply = reply
   return finalReply.choices[0].message.content
@@ -470,7 +467,7 @@ def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
 async def call_llm_img(body: mydomain.SocialMarketingImagetRequest):
   async with create_client_img() as client:
     response = await client.images.generate(
-        model="dall-e-3",
+        model=os.environ.get("OPENAI_MODEL_IMG") or "FLUX.1-schnell",
         prompt=create_img_prompt(body),
         n=1,
         size="1024x1024",
