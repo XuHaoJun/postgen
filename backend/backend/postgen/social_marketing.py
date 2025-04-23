@@ -382,6 +382,47 @@ def create_spliter_prompt():
   '''
   return prompt
 
+def format_content(content):
+  """
+  Formats content by trimming quotes and adding newline before hashtags
+  """
+  # Trim quotes
+  content = content.strip('"').strip('\\"')
+  
+  # Check if the content already has a newline before hashtags
+  lines = content.split('\n')
+  last_line = lines[-1].strip() if lines else ""
+  
+  # If the last line consists only of hashtags, no need to add newline
+  if last_line and all(word.startswith('#') for word in last_line.split()):
+    return content
+  
+  # Look for hashtags at the end of the content
+  words = last_line.split()
+  if not words:
+    return content
+    
+  # Process from the end to find continuous hashtags
+  hashtag_position = None
+  for i in range(len(words)-1, -1, -1):
+    if words[i].startswith('#'):
+      hashtag_position = i
+    else:
+      break
+  
+  # If we found hashtags at the end, insert a newline
+  if hashtag_position is not None:
+    hashtags = ' '.join(words[hashtag_position:])
+    content_without_hashtags = ' '.join(words[:hashtag_position])
+    
+    # Replace the last line with our modified version
+    if len(lines) > 1:
+      return '\n'.join(lines[:-1]) + '\n' + content_without_hashtags + '\n' + hashtags
+    else:
+      return content_without_hashtags + '\n' + hashtags
+  
+  return content
+
 async def call_llm(body: mydomain.SocialMarketingPostRequest):
   messages = [
     {'role': 'system', 'content': create_system_prompt()},
@@ -393,14 +434,14 @@ async def call_llm(body: mydomain.SocialMarketingPostRequest):
     }
   ]
   async with create_client() as client:
-    reply = await client.chat.completions.create(model='', messages=messages)
+    reply = await client.chat.completions.create(model=os.environ.get("OPENAI_MODEL") or "llama4-maverick-17b", messages=messages)
     if body.autoNewline:
       post = reply.choices[0].message.content
       print(post)
       finalReply = await client.chat.completions.create(model=os.environ.get("OPENAI_MODEL") or "llama4-maverick-17b", messages=[{'role': 'system', 'content': create_spliter_prompt()}, {'role': 'user', 'content': f'(斷句 "{post}")'}])
     else:
       finalReply = reply
-  return finalReply.choices[0].message.content
+  return format_content(finalReply.choices[0].message.content)
 
 def create_img_prompt(body: mydomain.SocialMarketingImagetRequest):
   prompt = f'''

@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import os
 from fastapi import FastAPI, Request, Query, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,9 +13,6 @@ import datetime
 
 from .postgen import social_marketing
 
-from dotenv import load_dotenv
-
-load_dotenv()
 
 from . import mydomain
 
@@ -37,13 +38,11 @@ app.add_middleware(
 )
 
 @app.post("/social-marketing/posts")
-@limiter.limit(os.environ.get("POSTS_CREATE_LIMIT") or "1/1minute")
 async def create_post(request: Request, data: mydomain.SocialMarketingPostRequest = Body(...)):
     text = await social_marketing.call_llm(data)
     return {"id": uuid.uuid4(), "text": text, "createdAt": datetime.datetime.now()}
 
 @app.post("/social-marketing/images")
-@limiter.limit(os.environ.get("POSTS_CREATE_LIMIT") or "1/1minute")
 async def create_post(request: Request, data: mydomain.SocialMarketingImagetRequest = Body(...)):
     resp = await social_marketing.call_llm_img(data)
     return resp
